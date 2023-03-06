@@ -19,6 +19,7 @@ public class GridState {
         this.isVisitable = true;
         this.stateReward = 0;
         this.color = "";
+        this.stateType = State.EMPTY;
         this.setFinal(false);
     }
 
@@ -80,23 +81,23 @@ public class GridState {
     public void setVisitable(boolean visitable) {
         isVisitable = visitable;
     }
-//
-//    public EnumState getStateType() {
-//        return stateType;
-//    }
 
-//    public void setStateType(EnumState stateType) {
-//        this.stateType = stateType;
-//    }
+    public State getStateType() {
+        return stateType;
+    }
 
-//    public String toString(Boolean is_symbol) {
-//        if (is_symbol) {
-////            if (this.stateType==EnumState.WALL) {
-////                return "|" + this.stateType.toString();
-////            }
-//            return "| " + this.stateType.toString() + " ";
-//        } else {
-//            return "[" + this.stateType.toString() + ", " + this.getCoord() + "]";
-//        }
-//    }
+    public void setStateType(State stateType) {
+        this.stateType = stateType;
+    }
+
+    public String toString(Boolean is_symbol) {
+        if (is_symbol) {
+//            if (this.stateType==EnumState.WALL) {
+//                return "|" + this.stateType.toString();
+//            }
+            return "| " + this.stateType.toString() + " ";
+        } else {
+            return "[" + this.stateType.toString() + ", " + this.getCoord() + "]";
+        }
+    }
 }
