@@ -20,4 +20,20 @@ public class Config {
     public static final double PROB_CW = 0.100;
     public static final double PROB_ACW = 0.100;
     public static final double PROB_OPPOSITE = 0.000;
+
+    // Discount factor
+    public static final double DISCOUNT =  0.990;
+
+    // Rmax
+    public static final double R_MAX = 1.000;
+
+    // Constant c
+    public static final double C = 0.100;
+
+    // Epsilon e = c * Rmax
+    public static final double EPSILON = C * R_MAX;
+
+    // Constant k (i.e. number of times simplified Bellman update is executed
+    // to produce the next utility estimate)
+    public static final int K = 30;
 }

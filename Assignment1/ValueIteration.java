@@ -2,6 +2,8 @@ package Assignment1;
 
 import java.util.*;
 
+import static Assignment1.Config.*;
+
 public class ValueIteration implements Agent{
     private double maximum_error_allowed = 0.0;
     private double discount = 0.0;
@@ -128,11 +130,11 @@ public class ValueIteration implements Agent{
         double oppositeUtility = getUtilOfStateActionPair(action.getOppositeAction(), row, col);
 
         //Expected Utility
-        actionUtility = (0.800 * intentUtility) +
-                (0.000 * stationaryUtility) +
-                (0.100* clockwiseUtility) +
-                (0.100 * antiClockwiseUtility) +
-                (0.000 * oppositeUtility);
+        actionUtility = (PROB_INTENT  * intentUtility) +
+                (PROB_STATIONARY  * stationaryUtility) +
+                (PROB_CW * clockwiseUtility) +
+                (PROB_ACW  * antiClockwiseUtility) +
+                (PROB_OPPOSITE  * oppositeUtility);
 
         return actionUtility;
     }
