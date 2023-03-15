@@ -1,19 +1,19 @@
-package Assignment1;
+package Assignment1.Classes;
 
-public class ActionUtilityPair implements Comparable<ActionUtilityPair> {
+public class UtilityAndAction implements Comparable<UtilityAndAction> {
 
     private Action action = null;
     private Double utility = 0.0;
 
-    public ActionUtilityPair() {
+    public UtilityAndAction() {
         action = null;
         utility = 0.0;
     }
-    public ActionUtilityPair(Action action) {
+    public UtilityAndAction(Action action) {
         this.action = action;
         this.utility = 0.0;
     }
-    public ActionUtilityPair(Action action, double utility) {
+    public UtilityAndAction(Action action, double utility) {
         this.action = action;
         this.utility = utility;
     }
@@ -23,7 +23,7 @@ public class ActionUtilityPair implements Comparable<ActionUtilityPair> {
     }
 
     public void setAction(Action action) {
-        if (action==null) {
+        if (action == null) {
             System.out.print("ACTION NULL");
         }
         this.action = action;
@@ -43,10 +43,7 @@ public class ActionUtilityPair implements Comparable<ActionUtilityPair> {
     }
 
     @Override
-    public int compareTo(ActionUtilityPair otherActionUtilityPair) {
-        // returns 1 if "actionUtilityPair" > "otherActionUtilityPair"
+    public int compareTo(UtilityAndAction otherActionUtilityPair) {
         return (this.getUtility().compareTo(otherActionUtilityPair.getUtility()));
-        // returns 1 if "otherActionUtilityPair" > "actionUtilityPair"
-        // return (otherActionUtilityPair.getUtility().compareTo(getUtility()));
     }
 }

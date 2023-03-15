@@ -1,8 +1,11 @@
-package Assignment1;
+package Assignment1.Classes;
+
+import Assignment1.Maze.Grid;
+import Assignment1.Maze.GridState;
 
 import java.util.*;
 
-import static Assignment1.Config.*;
+import static Assignment1.Main.Config.*;
 
 public class PolicyIteration {
     private double discount = 0.0;
@@ -12,11 +15,9 @@ public class PolicyIteration {
     private boolean policyIsUnstable = false;
 
     private GridState[][] grid = null;
-    private ActionUtilityPair[][] currActionUtilArr = null;
-    //    private ActionUtilityPair[][] newActionUtilArr = null;
-    private ActionUtilityPair[][] optimalPolicyActionUtilArr = null;
-
-    private List<ActionUtilityPair[][]> ListOfActionUtilityArrays = new ArrayList<>();
+    private UtilityAndAction[][] currActionUtilArr = null;
+    private UtilityAndAction[][] optimalPolicyActionUtilArr = null;
+    private List<UtilityAndAction[][]> ListOfActionUtilityArrays = new ArrayList<>();
 
     public PolicyIteration(Grid gridWorld, double discount, int K) {
         this.discount = discount;
@@ -41,18 +42,19 @@ public class PolicyIteration {
 
             // Policy Improvement: Update Actions
             this.policyIsUnstable = false;
+
             for (int row = 0; row < this.rows; row++){
                 for (int col = 0; col < this.cols; col++) {
                     // Check if GridState is Wall
                     if (!grid[row][col].isVisitable()) {continue;}
 
-                    ActionUtilityPair chosenActionUtilityPair = getChosenActionUtilityPair(this.optimalPolicyActionUtilArr, row, col);
-                    newMaxUtility = chosenActionUtilityPair.getUtility();
+                    UtilityAndAction chosenUtilityAndAction = getChosenUtilityAndAction(this.optimalPolicyActionUtilArr, row, col);
+                    newMaxUtility = chosenUtilityAndAction.getUtility();
                     Action policyAction = this.optimalPolicyActionUtilArr[row][col].getAction();
                     currPolicyUtility = getTransitionStateActionPairUtil(this.optimalPolicyActionUtilArr, policyAction, row, col);
 
                     if (newMaxUtility > currPolicyUtility) {
-                        this.optimalPolicyActionUtilArr[row][col].setAction(chosenActionUtilityPair.getAction());
+                        this.optimalPolicyActionUtilArr[row][col].setAction(chosenUtilityAndAction.getAction());
                         this.policyIsUnstable = true;
                     }
                 }
@@ -60,15 +62,14 @@ public class PolicyIteration {
             this.currActionUtilArr = replicateUtilArray(this.optimalPolicyActionUtilArr);
             this.ListOfActionUtilityArrays.add(this.currActionUtilArr);
 
-//            if (this.no_of_iterations%100==0) {break;}
         } while (this.policyIsUnstable);
     }
 
-    public List<ActionUtilityPair[][]> getResults() {
+    public List<UtilityAndAction[][]> getResults() {
         return this.ListOfActionUtilityArrays;
     }
 
-    public ActionUtilityPair[][] getOptimalPolicy() {
+    public UtilityAndAction[][] getOptimalPolicy() {
         return this.ListOfActionUtilityArrays.get(this.getNoOfIterations());
     }
 
@@ -77,33 +78,34 @@ public class PolicyIteration {
     }
 
 
-    private ActionUtilityPair[][] replicateUtilArray(ActionUtilityPair[][] src) {
-        return Arrays.stream(src).map(ActionUtilityPair[]::clone).toArray(ActionUtilityPair[][]::new);
+    private UtilityAndAction[][] replicateUtilArray(UtilityAndAction[][] src) {
+        return Arrays.stream(src).map(UtilityAndAction[]::clone).toArray(UtilityAndAction[][]::new);
     }
 
-    private ActionUtilityPair[][] generateRandomPolicy() {
-        ActionUtilityPair[][] actionUtilArr = new ActionUtilityPair[this.rows][this.cols];
+    private UtilityAndAction[][] generateRandomPolicy() {
+        UtilityAndAction[][] actionUtilArr = new UtilityAndAction[this.rows][this.cols];
 
         for (int row = 0; row < this.rows; row++) {
             for (int col = 0; col < this.cols; col++) {
                 if (this.grid[row][col].isVisitable()) {
-                    actionUtilArr[row][col] = new ActionUtilityPair(Action.getRandAction());
-//                    actionUtilArr[row][col] = new ActionUtilityPair(Action.UP);
+                    //retrieve a random action with a utility of 0
+                    actionUtilArr[row][col] = new UtilityAndAction(Action.getRandAction());
                 } else {
-                    actionUtilArr[row][col] = new ActionUtilityPair();
+                    actionUtilArr[row][col] = new UtilityAndAction();
                 }
             }
         }
         return actionUtilArr;
     }
 
-    private ActionUtilityPair[][] policyEvaluation(ActionUtilityPair[][] ActionUtilArr, GridState[][] grid, int K, double discount) {
-        ActionUtilityPair[][] currActionUtilArr = replicateUtilArray(ActionUtilArr);
-        ActionUtilityPair[][] newActionUtilArr = generateInitialPolicy();
+    private UtilityAndAction[][] policyEvaluation(UtilityAndAction[][] ActionUtilArr, GridState[][] grid, int K, double discount) {
+        UtilityAndAction[][] currActionUtilArr = replicateUtilArray(ActionUtilArr);
 
-        ActionUtilityPair newActionUtility = null;
+        //initialise with the UtilityAndAction
+        UtilityAndAction[][] newActionUtilArr = generateInitialPolicy();
+
+        UtilityAndAction newActionUtility = null;
         for (int i=0; i<K; i++) {
-//            currActionUtilArr = replicateUtilArray(newActionUtilArr);
 
             for (int row = 0; row < this.rows; row++) {
                 for (int col = 0; col < this.cols; col++) {
@@ -119,25 +121,26 @@ public class PolicyIteration {
         return newActionUtilArr;
     }
 
-    private ActionUtilityPair[][] generateInitialPolicy() {
-        ActionUtilityPair[][] actionUtilArr = new ActionUtilityPair[this.rows][this.cols];
+    private UtilityAndAction[][] generateInitialPolicy() {
+        UtilityAndAction[][] actionUtilArr = new UtilityAndAction[this.rows][this.cols];
 
         for (int row = 0; row < this.rows; row++) {
             for (int col = 0; col < this.cols; col++) {
-                actionUtilArr[row][col] = new ActionUtilityPair();
+                actionUtilArr[row][col] = new UtilityAndAction();
             }
         }
         return actionUtilArr;
     }
 
-    private ActionUtilityPair getSimplifiedBellmanUpdate(int row, int col, ActionUtilityPair[][] currActionUtilArr, GridState[][] grid, double discount) {
+    private UtilityAndAction getSimplifiedBellmanUpdate(int row, int col, UtilityAndAction[][] currActionUtilArr, GridState[][] grid, double discount) {
         Action action = currActionUtilArr[row][col].getAction();
         double currUtility = getTransitionStateActionPairUtil(currActionUtilArr, action, row, col);
+        //retrieves the updated utility value
         double newUtility = grid[row][col].getStateReward() + (discount * currUtility);
-        return new ActionUtilityPair(action, newUtility);
+        return new UtilityAndAction(action, newUtility);
     }
 
-    private double getTransitionStateActionPairUtil(ActionUtilityPair[][] actionUtilArr, Action action, int row, int col) {
+    private double getTransitionStateActionPairUtil(UtilityAndAction[][] actionUtilArr, Action action, int row, int col) {
         double actionUtility = 0.000;
 
         double intentUtility = getUtilOfStateActionPair(actionUtilArr, action, row, col);
@@ -154,7 +157,7 @@ public class PolicyIteration {
         return actionUtility;
     }
 
-    private double getUtilOfStateActionPair(ActionUtilityPair[][] currActionUtilArr, Action action, int row, int col) {
+    private double getUtilOfStateActionPair(UtilityAndAction[][] currActionUtilArr, Action action, int row, int col) {
         int newY = row;
         int newX = col;
 
@@ -171,15 +174,15 @@ public class PolicyIteration {
         return currActionUtilArr[row][col].getUtility();
     }
 
-    private ActionUtilityPair getChosenActionUtilityPair(ActionUtilityPair[][] currActionUtilArr, int row, int col) {
-        List<ActionUtilityPair> listOfActionUtilityPair = new ArrayList<>();
+    private UtilityAndAction getChosenUtilityAndAction(UtilityAndAction[][] currActionUtilArr, int row, int col) {
+        List<UtilityAndAction> listOfUtilityAndAction = new ArrayList<>();
         EnumSet.allOf(Action.class).
-                forEach(action -> listOfActionUtilityPair.add(
-                                new ActionUtilityPair(action, getTransitionStateActionPairUtil(currActionUtilArr, action, row, col))
+                forEach(action -> listOfUtilityAndAction.add(
+                                new UtilityAndAction(action, getTransitionStateActionPairUtil(currActionUtilArr, action, row, col))
                         )
                 );
 
-        ActionUtilityPair chosenActionUtilityPair = Collections.max(listOfActionUtilityPair);
-        return chosenActionUtilityPair;
+        UtilityAndAction chosenUtilityAndAction = Collections.max(listOfUtilityAndAction);
+        return chosenUtilityAndAction;
     }
 }

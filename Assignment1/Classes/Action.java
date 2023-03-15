@@ -1,4 +1,4 @@
-package Assignment1;
+package Assignment1.Classes;
 
 import java.util.Random;
 

@@ -1,4 +1,4 @@
-package Assignment1;
+package Assignment1.Maze;
 
 public class GridState {
     private char symbol;
@@ -92,9 +92,6 @@ public class GridState {
 
     public String toString(Boolean is_symbol) {
         if (is_symbol) {
-//            if (this.stateType==EnumState.WALL) {
-//                return "|" + this.stateType.toString();
-//            }
             return "| " + this.stateType.toString() + " ";
         } else {
             return "[" + this.stateType.toString() + ", " + this.getCoord() + "]";

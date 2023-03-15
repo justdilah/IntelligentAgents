@@ -1,15 +1,16 @@
-package Assignment1;
+package Assignment1.Maze;
 
-import java.util.Random;
+import static Assignment1.ExternalMethods.CommonMethods.generateRandomInt;
+
 public enum State {
-    START("S"),
-    EMPTY(" "),
+    START("S "),
+    EMPTY("  "),
 
 
     PENALTY("--"),
     REWARD("+R"),
     //    REWARD(new String(Character.toChars(0x221A))), // √
-    WALL("X");
+    WALL("X ");
 
     private String strRep;
     State(String strRep) {
@@ -29,8 +30,4 @@ public enum State {
         return AVAILABLE_STATES[generateRandomInt(1, NO_OF_STATES)];
     }
 
-    public static int generateRandomInt(int min, int max) {
-        Random r = new Random();
-        return r.nextInt((max - min) + 1) + min;
-    }
 }

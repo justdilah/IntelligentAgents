@@ -1,39 +1,43 @@
-package Assignment1;
+package Assignment1.Classes;
+
+import Assignment1.Maze.Grid;
+import Assignment1.Maze.GridState;
 
 import java.util.*;
 
-import static Assignment1.Config.*;
+
+import static Assignment1.Main.Config.*;
 
 public class ValueIteration implements Agent{
-    private double maximum_error_allowed = 0.0;
-    private double discount = 0.0;
     private int rows = 0;
     private int cols = 0;
     private int no_of_iterations = 0;
     private double convergenceCriteria = 0.0;
 
     private GridState[][] grid = null;
-    private ActionUtilityPair[][] currActionUtilArr = null;
-    private ActionUtilityPair[][] newActionUtilArr = null;
-    private List<ActionUtilityPair[][]> ListOfActionUtilityArrays = new ArrayList<>();
+    private UtilityAndAction[][] currActionUtilArr = null;
+    private UtilityAndAction[][] newActionUtilArr = null;
+    private List<UtilityAndAction[][]> ListOfActionUtilityArrays = new ArrayList<>();
 
     //eplison - Stopping Criterion (Max change in the value function at each iteration is compared
     // against eplison)
     public ValueIteration(Grid map, double epsilon, double discount) {
-        this.maximum_error_allowed = epsilon;
-        this.discount = discount;
 
         this.rows = map.getRows();
         this.cols = map.getCols();
         this.grid = map.getGridMap();
 
-        this.currActionUtilArr = new ActionUtilityPair[rows][cols];
-        this.newActionUtilArr = new ActionUtilityPair[rows][cols];
 
+        //Initialisation
+        this.currActionUtilArr = new UtilityAndAction[rows][cols];
+        this.newActionUtilArr = new UtilityAndAction[rows][cols];
+
+        //For each block,
         newActionUtilArr = this.generateInitialPolicy();
 
         double maxChangeInUtility = 0;
-        this.convergenceCriteria = this.maximum_error_allowed * ((1-this.discount) / this.discount);
+
+        this.convergenceCriteria = epsilon * ((1-discount) / discount);
 
         this.no_of_iterations = 0;
 
@@ -43,7 +47,11 @@ public class ValueIteration implements Agent{
 
         do {
             this.no_of_iterations++;
+
+            //Copy content of newActionUtilArr to the currActionUtilArr
             this.currActionUtilArr = replicateUtilArray(newActionUtilArr);
+
+
             this.ListOfActionUtilityArrays.add(this.currActionUtilArr);
             maxChangeInUtility = 0;
 
@@ -55,30 +63,31 @@ public class ValueIteration implements Agent{
                         continue;
                     }
 
+                    //Retrieves the optimal action and utility
+                    UtilityAndAction chosenUtilityAndAction = getChosenUtilityAndAction(row, col);
 
-                    ActionUtilityPair chosenActionUtilityPair = getChosenActionUtilityPair(row, col);
-
-                    newUtility = this.grid[row][col].getStateReward() + (discount * chosenActionUtilityPair.getUtility());
+                    //retrieves the new utility of the current state
+                    newUtility = this.grid[row][col].getStateReward() + (discount * chosenUtilityAndAction.getUtility());
                     currUtility = this.currActionUtilArr[row][col].getUtility();
 
-                    chosenActionUtilityPair.setUtility(newUtility);
-                    this.newActionUtilArr[row][col] = chosenActionUtilityPair;
+                    chosenUtilityAndAction.setUtility(newUtility);
+                    this.newActionUtilArr[row][col] = chosenUtilityAndAction;
 
                     if (Math.abs(newUtility - currUtility) > maxChangeInUtility) {
                         maxChangeInUtility = Math.abs(newUtility - currUtility);
                     }
                 }
             }
-//            if (this.no_of_iterations%1000 == 0) break;
+
         } while (maxChangeInUtility >= this.convergenceCriteria);
         this.ListOfActionUtilityArrays.add(newActionUtilArr);
     }
 
-    public List<ActionUtilityPair[][]> getResults() {
+    public List<UtilityAndAction[][]> getResults() {
         return this.ListOfActionUtilityArrays;
     }
 
-    public ActionUtilityPair[][] getOptimalPolicy() {
+    public UtilityAndAction[][] getOptimalPolicy() {
         return this.ListOfActionUtilityArrays.get(this.getNoOfIterations());
     }
 
@@ -91,38 +100,40 @@ public class ValueIteration implements Agent{
     }
 
     //Returns a replicated Util Array
-    private ActionUtilityPair[][] replicateUtilArray(ActionUtilityPair[][] src) {
-        return Arrays.stream(src).map(ActionUtilityPair[]::clone).toArray(ActionUtilityPair[][]::new);
+    private UtilityAndAction[][] replicateUtilArray(UtilityAndAction[][] src) {
+        return Arrays.stream(src).map(UtilityAndAction[]::clone).toArray(UtilityAndAction[][]::new);
     }
 
-    private ActionUtilityPair[][] generateInitialPolicy() {
-        ActionUtilityPair[][] actionUtilArr = new ActionUtilityPair[this.rows][this.cols];
+    private UtilityAndAction[][] generateInitialPolicy() {
+        UtilityAndAction[][] actionUtilArr = new UtilityAndAction[this.rows][this.cols];
 
-        //At each coordinate, initialise ActionUtilityPair
+        //At each coordinate, initialise UtilityAndAction
         for (int row = 0; row < this.rows; row++) {
             for (int col = 0; col < this.cols; col++) {
-                actionUtilArr[row][col] = new ActionUtilityPair();
+                actionUtilArr[row][col] = new UtilityAndAction();
             }
         }
         return actionUtilArr;
     }
 
-    private ActionUtilityPair getChosenActionUtilityPair(int row, int col) {
-        List<ActionUtilityPair> listOfActionUtilityPair = new ArrayList<>();
+    private UtilityAndAction getChosenUtilityAndAction(int row, int col) {
+        List<UtilityAndAction> listOfUtilityAndAction = new ArrayList<>();
+        //Goes through the loop of Actions (UP,DOWN,LEFT,RIGHT)
         EnumSet.allOf(Action.class).
-                forEach(action -> listOfActionUtilityPair.add(
-                                new ActionUtilityPair(action, getTransitionStateActionPairUtil(action, row, col))
+                forEach(action -> listOfUtilityAndAction.add(
+                                new UtilityAndAction(action, getTransitionStateActionPairUtil(action, row, col))
                         )
                 );
-        //Retrieve the Max Utility of the action
-        ActionUtilityPair chosenActionUtilityPair = Collections.max(listOfActionUtilityPair);
-        return chosenActionUtilityPair;
+        //Retrieve the Max Utility of the actions
+        UtilityAndAction chosenUtilityAndAction = Collections.max(listOfUtilityAndAction);
+        return chosenUtilityAndAction;
     }
 
-    //retrieves the utility
+    //retrieves the maximum utility from (expected utility of taking every possible action in state s)
     private double getTransitionStateActionPairUtil(Action action, int row, int col) {
         double actionUtility = 0.000;
 
+        //Calculate all the expected utility of all possible actions
         double intentUtility = getUtilOfStateActionPair(action, row, col);
         double stationaryUtility = getUtilOfStateActionPair(null, row, col);
         double clockwiseUtility = getUtilOfStateActionPair(action.getClockwiseAction(), row, col);
@@ -144,6 +155,7 @@ public class ValueIteration implements Agent{
         int newX = col;
         //not stationery
         if (action != null) {
+            //based on the action, it will retrieve a + 1/-1 coordinate from the coordinate
             newY = row + action.getActionY();
             newX = col + action.getActionX();
         }

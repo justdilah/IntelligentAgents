@@ -1,16 +1,20 @@
-package Assignment1;
+package Assignment1.ExternalMethods;
+
+import Assignment1.Maze.GridState;
+import Assignment1.Classes.UtilityAndAction;
 
 import java.text.DecimalFormat;
 
-import static Assignment1.CommonMethods.*;
+import static Assignment1.ExternalMethods.CommonMethods.*;
 
 public class DisplayHelper {
 
-    public static void displayActionPolicy(final ActionUtilityPair[][] actionUtilityPair) {
+
+    public static void displayActionPolicy(final UtilityAndAction[][] UtilityAndAction) {
 
         StringBuilder str = new StringBuilder();
-        int rows = actionUtilityPair.length;
-        int cols = actionUtilityPair[0].length;
+        int rows = UtilityAndAction.length;
+        int cols = UtilityAndAction[0].length;
 
         str.append(getSectionHeader("Action Policy", true));
         for (int row = 0; row < rows; row++) {
@@ -29,9 +33,15 @@ public class DisplayHelper {
             for (int col = 0; col < cols; col++) {
                 if (col==0) {
                     str.append(row);
-                    str.append("   ");
+                    str.append("  ");
                 }
-                str.append("| " + actionUtilityPair[row][col].toString() + " ");
+                if(UtilityAndAction[row][col].toString() == "X"){
+                    str.append("| " + UtilityAndAction[row][col].toString() + "  ");
+                } else {
+                    str.append("| " + UtilityAndAction[row][col].toString() + " ");
+                }
+
+
                 if (col==rows-1) {
                     str.append("|");
                 }
@@ -43,9 +53,9 @@ public class DisplayHelper {
         System.out.println(str.toString());
     }
 
-    public static void displayUtilities(final GridState[][] grid, final ActionUtilityPair[][] actionUtilityPair) {
-        int rows = actionUtilityPair.length;
-        int cols = actionUtilityPair[0].length;
+    public static void displayUtilities(final GridState[][] grid, final UtilityAndAction[][] UtilityAndAction) {
+        int rows = UtilityAndAction.length;
+        int cols = UtilityAndAction[0].length;
 
         printSectionHeader("Reference utilities of states", true);
         printDetails("Coordinates are in (col,row) format. Top-left corner is (0,0) <");
@@ -54,15 +64,15 @@ public class DisplayHelper {
 
                 if (grid[row][col].isVisitable()) {
                     System.out.printf("(%1d,%1d) : %-2.6f%n", col, row,
-                            actionUtilityPair[row][col].getUtility());
+                            UtilityAndAction[row][col].getUtility());
                 }
             }
         }
     }
 
-    public static void displayUtilitiesGrid(final ActionUtilityPair[][] actionUtilityPair) {
-        int rows = actionUtilityPair.length;
-        int cols = actionUtilityPair[0].length;
+    public static void displayUtilitiesGrid(final UtilityAndAction[][] UtilityAndAction) {
+        int rows = UtilityAndAction.length;
+        int cols = UtilityAndAction[0].length;
 
         String pattern = "0.000";
         DecimalFormat decimalFormat = new DecimalFormat(pattern);
@@ -89,7 +99,7 @@ public class DisplayHelper {
                     str.append(row);
                     str.append("  ");
                 }
-                util = actionUtilityPair[row][col].getUtility();
+                util = UtilityAndAction[row][col].getUtility();
                 if (util == 0) {
                     str.append("|  " + "██████" + "  ");
                 } else if (util < 0) {
@@ -123,6 +133,46 @@ public class DisplayHelper {
             str.append("+——————————");
         }
         return str.append("+");
+    }
+
+    public static void print(String msg) {
+        System.out.println(msg);
+    }
+
+    public static String getHeader(String msg, boolean toUpperCase) {
+        StringBuilder str = new StringBuilder();
+        msg = convertToUpperCase(msg, toUpperCase);
+        str.append("\n▒▒▒▒▒▒▒▒▒ " + msg + " ▒▒▒▒▒▒▒▒▒\n");
+        return str.toString();
+    }
+
+    public static String getSectionHeader(String msg, boolean toUpperCase) {
+        StringBuilder str = new StringBuilder();
+        msg = convertToUpperCase(msg, toUpperCase);
+        str.append("=========== " + msg + " ===========\n");
+        return str.toString();
+    }
+
+    public static String getDetails(String msg) {
+        StringBuilder str = new StringBuilder();
+        str.append("> ");
+        str.append(msg + "\n");
+        return str.toString();
+    }
+
+    public static void printHeader(String msg, boolean toUpperCase) {
+        msg = getHeader(msg, toUpperCase);
+        System.out.print(msg);
+    }
+
+    public static void printSectionHeader(String msg, boolean toUpperCase) {
+        msg = getSectionHeader(msg, toUpperCase);
+        System.out.print(msg);
+    }
+
+    public static void printDetails(String msg) {
+        msg = getDetails(msg);
+        System.out.print(msg);
     }
 
 
