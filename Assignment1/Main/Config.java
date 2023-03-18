@@ -2,10 +2,14 @@ package Assignment1.Main;
 
 import java.util.ArrayList;
 
+/**
+ * Config class is used to store the constants
+ */
 public class Config {
 
     public static final int NUM_COLS = 6;
     public static final int NUM_ROWS = 6;
+
 //    public static final String START_POINT = "5,3";
 //    public static final String REWARD_POINTS = "2,1;1,4";
 //    public static final String PENALTY_POINTS = "0,1;0,3;2,3;3,3;3,4;4,4;5,1;5,5";
@@ -22,22 +26,27 @@ public class Config {
     public static final double W_REWARD = 0.000;
 
     /// Transition model
-    public static final double PROB_INTENT = 0.800;
-    public static final double PROB_STATIONARY = 0.000;
-    public static final double PROB_CW = 0.100;
-    public static final double PROB_ACW = 0.100;
-    public static final double PROB_OPPOSITE = 0.000;
+
+    //Intended outcome probability
+    public static final double INTENDED_PROB = 0.800;
+
+
+    //Clock-wise probability
+    public static final double CW_PROB = 0.100;
+
+    //Anti Clock-wise probability
+    public static final double ACW_PROB = 0.100;
+//    public static final double OPP_PROB = 0.000;
 
     // Discount factor
     public static final double DISCOUNT =  0.990;
 
-    // Rmax
     public static final double MAX_REWARD = 1.000;
 
     // Constant c
     public static final double C = 0.100;
 
-    // Epsilon e = c * Rmax
+    // Epsilon = c * Rmax
     public static final double EPSILON = C * MAX_REWARD;
 
     // Constant k (i.e. number of times simplified Bellman update is executed

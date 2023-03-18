@@ -1,5 +1,8 @@
 package Assignment1.Classes;
 
+/**
+ * UtilityAndAction class holds the utility value and action of the state
+ */
 public class UtilityAndAction implements Comparable<UtilityAndAction> {
 
     private Action action = null;
@@ -14,8 +17,9 @@ public class UtilityAndAction implements Comparable<UtilityAndAction> {
         this.utility = 0.0;
     }
     public UtilityAndAction(Action action, double utility) {
-        this.action = action;
         this.utility = utility;
+        this.action = action;
+
     }
 
     public Action getAction() {
@@ -23,9 +27,6 @@ public class UtilityAndAction implements Comparable<UtilityAndAction> {
     }
 
     public void setAction(Action action) {
-        if (action == null) {
-            System.out.print("ACTION NULL");
-        }
         this.action = action;
     }
 

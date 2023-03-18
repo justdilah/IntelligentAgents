@@ -12,7 +12,10 @@ import java.util.List;
 import static Assignment1.Main.Config.NUM_COLS;
 import static Assignment1.Main.Config.NUM_ROWS;
 
-public class FileIO {
+/**
+ * WriteToFile class is used to write all the utility estimates in the csv file
+ */
+public class WriteToFile {
     public static void writeToFile(List<UtilityAndAction[][]> ListOfAUArr, int scale, String directory, String fileName) {
 
         StringBuilder sb = new StringBuilder();
@@ -25,9 +28,8 @@ public class FileIO {
                 Iterator<UtilityAndAction[][]> iter = ListOfAUArr.iterator();
                 while(iter.hasNext()) {
 
-                    UtilityAndAction[][] actionAndUtility = iter.next();
-                    sb.append(decimalFormat.format(
-                            actionAndUtility[row][col].getUtility()), 0, 7);
+                    UtilityAndAction[][] utilityAndActionArr = iter.next();
+                    sb.append(decimalFormat.format(utilityAndActionArr[row][col].getUtility()), 0, 7);
 
                     if(iter.hasNext()) {
                         sb.append(",");
@@ -37,11 +39,7 @@ public class FileIO {
             }
         }
 
-        writeToFile(sb.toString().trim(), directory,  fileName + ".csv");
-    }
-
-    public static void writeToFile(String content, String directory, String fileName)
-    {
+        fileName = fileName + ".csv";
         try
         {
             File dir = new File(directory);
@@ -49,7 +47,7 @@ public class FileIO {
             String filePath = directory + fileName;
             FileWriter fw = new FileWriter(new File(filePath), false);
 
-            fw.write(content);
+            fw.write(sb.toString().trim());
             fw.close();
 
         }

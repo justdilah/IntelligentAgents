@@ -1,12 +1,14 @@
 package Assignment1.Maze;
 
-import static Assignment1.ExternalMethods.CommonMethods.generateRandomInt;
+import static Assignment1.ExternalMethods.RepeatedFunctions.generateRandomInt;
 
+
+/**
+ * State class stores the states (penalty, empty, reward, wall, start)
+ */
 public enum State {
     START("S "),
     EMPTY("  "),
-
-
     PENALTY("--"),
     REWARD("+R"),
     //    REWARD(new String(Character.toChars(0x221A))), // √
@@ -23,11 +25,5 @@ public enum State {
     }
 
     private static final State[] AVAILABLE_STATES = values();
-    private static final int NO_OF_STATES = AVAILABLE_STATES.length;
-
-    public static State generateRandState() {
-        /** Randomly generates a state with the exception of EnumState.START */
-        return AVAILABLE_STATES[generateRandomInt(1, NO_OF_STATES)];
-    }
 
 }

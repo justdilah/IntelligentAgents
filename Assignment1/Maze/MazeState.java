@@ -1,7 +1,9 @@
 package Assignment1.Maze;
 
-public class GridState {
-    private char symbol;
+/**
+ * MazeState class stores the state type, reward value, the x, and y coordinates of each state
+ */
+public class MazeState {
     protected int x_coord;
     protected int y_coord;
     protected double stateReward;
@@ -9,26 +11,16 @@ public class GridState {
     protected boolean isVisitable;
     protected boolean isFinal;
 
-    protected String color;
     protected State stateType;
 
-    public GridState(int x, int y) {
+    public MazeState(int x, int y) {
         this.x_coord = x;
         this.y_coord = y;
         this.isEmpty = true;
         this.isVisitable = true;
         this.stateReward = 0;
-        this.color = "";
         this.stateType = State.EMPTY;
         this.setFinal(false);
-    }
-
-    public String getColor(){
-        return this.color;
-    }
-
-    public void setColor(String color){
-        this.color = color;
     }
 
     public String getCoord() {
@@ -58,20 +50,9 @@ public class GridState {
         this.stateReward = stateReward;
     }
 
-    public boolean isEmpty() {
-        return isEmpty;
-    }
-
-    public void setEmpty(boolean empty) {
-        isEmpty = empty;
-    }
 
     public boolean isVisitable() {
         return isVisitable;
-    }
-
-    public boolean isFinal() {
-        return this.isFinal;
     }
 
     public void setFinal(boolean isFinal) {

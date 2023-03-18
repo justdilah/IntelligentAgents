@@ -4,25 +4,31 @@ import java.util.Random;
 
 import static Assignment1.Main.Config.*;
 
-public class Grid {
-    protected int noOfWalls = 5;
-    protected int noOfRewards = 2;
-    protected int noOfPenalties = 8;
-    private GridState[][] map;
-    public Grid(int row, int col,int scale, boolean ranAllocation){
-        CreateGridMap(row,col,scale,ranAllocation);
+/**
+ * Maze class
+ */
+public class Maze {
+
+    private String sp = "5,3";
+    private String rp = "2,1;1,4";
+    private String pp = "0,1;0,3;2,3;3,3;3,4;4,4;5,1;5,5";
+    private String wp = "0,2;2,0;2,2;1,5;4,1";
+
+    private MazeState[][] map;
+    public Maze(int row, int col,int scale, boolean ranAllocation,int select){
+        CreateMazeMap(row,col,scale,ranAllocation,select);
     }
 
 
-    private void CreateGridMap(int rows,int cols, int scale,boolean ranAllocation){
+    private void CreateMazeMap(int rows,int cols, int scale,boolean complicated,int select){
 
         Random ran = new Random();
 
-        map = new GridState[rows*scale][cols*scale];
+        map = new MazeState[rows*scale][cols*scale];
 
         for (int r=0; r<getRows(); r++) {
             for (int c=0; c<getCols(); c++) {
-                map[r][c] = new GridState(r, c);
+                map[r][c] = new MazeState(r, c);
             }
         }
 
@@ -34,46 +40,38 @@ public class Grid {
             }
         }
 
-//        boolean ranAllocation = true;
-        int totalNumOfAllowedStates = 1 + noOfRewards + noOfPenalties + noOfWalls;
-        if(ranAllocation){
+        if(complicated){
+            //1st Case
+            if(select == 1) {
+                sp = "3,1";
+                rp = "0,3;0,5;3,0;5,0;5,3";
+                pp = "1,0;2,3;2,5;5,4;5,5";
+                wp = "0,1;1,2;2,0;2,1;3,5";
 
-            for(int r = 0;r< totalNumOfAllowedStates + 1;r++){
-                int ranRow = 0;
-                int ranCol = 0;
-                boolean flag = true;
-                while (flag == true){
-                    ranRow = ran.nextInt(getRows());
-                    ranCol= ran.nextInt(getCols());
-                    if (map[ranRow][ranCol].getStateType() == State.EMPTY){
-                        flag = false;
-                    }
-                }
-                System.out.println(ranRow + ", " + ranCol);
-                if(r == 0){
-                    map[ranRow][ranCol].setStateReward(0);
-                    map[ranRow][ranCol].setStateType(State.START);
-                    this.map[ranRow][ranCol].setVisitable(true);
-                } else if (r <= noOfRewards){
-                    System.out.println("Reward");
-                    this.map[ranRow][ranCol].setStateReward(R_REWARD);
-                    this.map[ranRow][ranCol].setStateType(State.REWARD);
-                    this.map[ranRow][ranCol].setVisitable(true);
-                } else if (r <= noOfRewards + noOfPenalties) {
-                    System.out.println("Penalty");
-                    this.map[ranRow][ranCol].setStateReward(P_REWARD);
-                    this.map[ranRow][ranCol].setStateType(State.PENALTY);
-                    this.map[ranRow][ranCol].setVisitable(true);
-                } else if (r <= noOfRewards + noOfPenalties + noOfWalls)  {
-                    System.out.println("Wall");
-                    this.map[ranRow][ranCol].setStateReward(W_REWARD);
-                    this.map[ranRow][ranCol].setStateType(State.WALL);
-                    this.map[ranRow][ranCol].setVisitable(false);
-                }
-
-
-
+            } else {
+                //2nd Case
+                sp = "5,3";
+                rp = "2,1;1,4";
+                pp = "0,1;0,3;2,3;3,3;3,4;4,4;5,1;5,5";
+                wp = "0,2;2,0;2,2;1,5;4,1";
             }
+
+            //START POINT
+            map[Integer.valueOf(sp.split(",")[0])][Integer.valueOf(sp.split(",")[1])].setStateReward(0);
+            map[Integer.valueOf(sp.split(",")[0])][Integer.valueOf(sp.split(",")[1])].setStateType(State.START);
+
+            //REWARD POINTS
+            String[] arr = rp.split(";");
+            initialiseStates(arr,R_REWARD,true,State.REWARD,scale);
+
+            //PENALTY POINTS
+            arr = pp.split(";");
+            initialiseStates(arr,P_REWARD,true,State.PENALTY,scale);
+
+            //WALL POINTS
+            arr = wp.split(";");
+            initialiseStates(arr,W_REWARD,false,State.WALL,scale);
+
         } else {
             //START POINT
             map[Integer.valueOf(START_POINT.split(",")[0])][Integer.valueOf(START_POINT.split(",")[1])].setStateReward(0);
@@ -190,11 +188,11 @@ public class Grid {
         return str.toString();
     }
 
-    public void displayGridWorld() {
+    public void displayMazeWorld() {
         System.out.println(this.toString(true));
     }
 
-        public GridState[][] getGridMap(){
+        public MazeState[][] getMazeMap(){
         return this.map;
     }
 }

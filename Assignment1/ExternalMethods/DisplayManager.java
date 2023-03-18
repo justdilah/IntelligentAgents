@@ -1,22 +1,27 @@
 package Assignment1.ExternalMethods;
 
-import Assignment1.Maze.GridState;
+import Assignment1.Maze.MazeState;
 import Assignment1.Classes.UtilityAndAction;
 
 import java.text.DecimalFormat;
 
-import static Assignment1.ExternalMethods.CommonMethods.*;
+import static Assignment1.ExternalMethods.RepeatedFunctions.*;
 
-public class DisplayHelper {
+/**
+ *  DisplayManager class is used to display the map and all the utilities and actions in a grid format on Main.java, ComplicatedMazeEnvScale.java,CompilcatedMazeEnv1stCase.java,
+ *  CompilcatedMazeEnv2ndCase.java
+ *
+ */
+public class DisplayManager {
 
 
-    public static void displayActionPolicy(final UtilityAndAction[][] UtilityAndAction) {
+    public static void displayActionsInGrid(final UtilityAndAction[][] UtilityAndAction) {
 
         StringBuilder str = new StringBuilder();
         int rows = UtilityAndAction.length;
         int cols = UtilityAndAction[0].length;
 
-        str.append(getSectionHeader("Action Policy", true));
+        str.append(getHeader("Action Policy", true));
         for (int row = 0; row < rows; row++) {
             if (row==0) {
                 for (int r = 0; r < rows + 1; r++) {
@@ -28,7 +33,7 @@ public class DisplayHelper {
                 }
                 str.append("\n");
             }
-            str = addShortInBetweenDesign(str, cols);
+            str = addShortLinePlus(str, cols);
             str.append("\n");
             for (int col = 0; col < cols; col++) {
                 if (col==0) {
@@ -48,16 +53,16 @@ public class DisplayHelper {
             }
             str.append("\n");
         }
-        str = addShortInBetweenDesign(str, cols);
+        str = addShortLinePlus(str, cols);
 
         System.out.println(str.toString());
     }
 
-    public static void displayUtilities(final GridState[][] grid, final UtilityAndAction[][] UtilityAndAction) {
+    public static void displayUtilities(final MazeState[][] grid, final UtilityAndAction[][] UtilityAndAction) {
         int rows = UtilityAndAction.length;
         int cols = UtilityAndAction[0].length;
 
-        printSectionHeader("Reference utilities of states", true);
+        printHeader("Reference utilities of states", true);
         printDetails("Coordinates are in (col,row) format. Top-left corner is (0,0) <");
         for (int col = 0; col < cols; col++) {
             for (int row = 0; row < rows; row++) {
@@ -70,7 +75,7 @@ public class DisplayHelper {
         }
     }
 
-    public static void displayUtilitiesGrid(final UtilityAndAction[][] UtilityAndAction) {
+    public static void displayUtilitiesInGrid(final UtilityAndAction[][] UtilityAndAction) {
         int rows = UtilityAndAction.length;
         int cols = UtilityAndAction[0].length;
 
@@ -80,7 +85,7 @@ public class DisplayHelper {
         StringBuilder str = new StringBuilder();
         double util;
 
-        str.append(getSectionHeader("Utilities Grid", true));
+        str.append(getHeader("Utilities Grid", true));
         for (int row = 0; row < rows; row++) {
             if (row == 0) {
                 for (int r = 0; r < rows + 1; r++) {
@@ -92,7 +97,7 @@ public class DisplayHelper {
                 }
                 str.append("\n");
             }
-            str = addLongInBetweenDesign(str, cols);
+            str = addLongLinePlus(str, cols);
             str.append("\n");
             for (int col = 0; col < cols; col++) {
                 if (col == 0) {
@@ -114,12 +119,12 @@ public class DisplayHelper {
             }
             str.append("\n");
         }
-        str = addLongInBetweenDesign(str, cols);
+        str = addLongLinePlus(str, cols);
 
         System.out.println(str.toString());
     }
 
-    public static StringBuilder addShortInBetweenDesign(StringBuilder str, int cols) {
+    public static StringBuilder addShortLinePlus(StringBuilder str, int cols) {
         str.append("   ");
         for (int col = 0; col < cols; col++) {
             str.append("+————");
@@ -127,7 +132,7 @@ public class DisplayHelper {
         return str.append("+");
     }
 
-    public static StringBuilder addLongInBetweenDesign(StringBuilder str, int cols) {
+    public static StringBuilder addLongLinePlus(StringBuilder str, int cols) {
         str.append("   ");
         for (int col = 0; col < cols; col++) {
             str.append("+——————————");
@@ -135,28 +140,10 @@ public class DisplayHelper {
         return str.append("+");
     }
 
-    public static void print(String msg) {
-        System.out.println(msg);
-    }
-
     public static String getHeader(String msg, boolean toUpperCase) {
         StringBuilder str = new StringBuilder();
-        msg = convertToUpperCase(msg, toUpperCase);
-        str.append("\n▒▒▒▒▒▒▒▒▒ " + msg + " ▒▒▒▒▒▒▒▒▒\n");
-        return str.toString();
-    }
-
-    public static String getSectionHeader(String msg, boolean toUpperCase) {
-        StringBuilder str = new StringBuilder();
-        msg = convertToUpperCase(msg, toUpperCase);
+        msg = toUpperCase(msg, toUpperCase);
         str.append("=========== " + msg + " ===========\n");
-        return str.toString();
-    }
-
-    public static String getDetails(String msg) {
-        StringBuilder str = new StringBuilder();
-        str.append("> ");
-        str.append(msg + "\n");
         return str.toString();
     }
 
@@ -165,13 +152,11 @@ public class DisplayHelper {
         System.out.print(msg);
     }
 
-    public static void printSectionHeader(String msg, boolean toUpperCase) {
-        msg = getSectionHeader(msg, toUpperCase);
-        System.out.print(msg);
-    }
-
     public static void printDetails(String msg) {
-        msg = getDetails(msg);
+        StringBuilder str = new StringBuilder();
+        str.append("> ");
+        str.append(msg + "\n");
+        msg = str.toString();
         System.out.print(msg);
     }
 
