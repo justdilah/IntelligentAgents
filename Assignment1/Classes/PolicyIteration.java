@@ -19,9 +19,9 @@ public class PolicyIteration {
     private boolean unchanged = false;
 
     private MazeState[][] Maze = null;
-    private UtilityAndAction[][] currentActionAndUtilityArr = null;
-    private UtilityAndAction[][] optimalPolicyActionUtilArr = null;
-    private List<UtilityAndAction[][]> ListOfActionUtilityArrays = new ArrayList<>();
+    private UtilityAndAction[][] currentUtilityAndActionArray = null;
+    private UtilityAndAction[][] optimalUtilityAndActionArray = null;
+    private List<UtilityAndAction[][]> allUtilityAndActionArray = new ArrayList<>();
 
     public PolicyIteration(Maze map, double discount, int K) {
         this.discount = discount;
@@ -34,28 +34,28 @@ public class PolicyIteration {
         this.no_of_iterations = 0;
 
         // Intialise the array with state utility of 0 and random action for each state
-        this.currentActionAndUtilityArr = generateRandomPolicy();
+        this.currentUtilityAndActionArray = generateRandomPolicy();
 
-        this.ListOfActionUtilityArrays.add(this.currentActionAndUtilityArr);
+        this.allUtilityAndActionArray.add(this.currentUtilityAndActionArray);
 
         do {
             this.no_of_iterations++;
 
             // Update the state utilties by executing policy evaluation
-            this.optimalPolicyActionUtilArr = performPolicyEvaluation(this.currentActionAndUtilityArr, this.Maze, K, discount);
+            this.optimalUtilityAndActionArray = performPolicyEvaluation(this.currentUtilityAndActionArray, this.Maze, K, discount);
 
             // Update Actions by executing policy improvement
             this.unchanged = performPolicyImprovement();
 
-        } while (this.unchanged);
+        } while (!this.unchanged);
     }
 
     public List<UtilityAndAction[][]> getUtilityEstimates() {
-        return this.ListOfActionUtilityArrays;
+        return this.allUtilityAndActionArray;
     }
 
     public UtilityAndAction[][] getOptimalPolicy() {
-        return this.ListOfActionUtilityArrays.get(this.getNoOfIterations());
+        return this.allUtilityAndActionArray.get(this.getNoOfIterations());
     }
 
     public int getNoOfIterations() {
@@ -109,7 +109,7 @@ public class PolicyIteration {
     private boolean performPolicyImprovement(){
         double newMaxUtility = 0.0;
         double currPolicyUtility = 0.0;
-        boolean ucvar = false;
+        boolean ucvar = true;
         for (int row = 0; row < this.rows; row++){
             for (int col = 0; col < this.cols; col++) {
                 // Check if MazeState is Wall
@@ -117,20 +117,20 @@ public class PolicyIteration {
                     continue;
                 }
 
-                UtilityAndAction chosenUtilityAndAction = getMaxUtilityAndAction(this.optimalPolicyActionUtilArr, row, col);
+                UtilityAndAction chosenUtilityAndAction = getMaxUtilityAndAction(this.optimalUtilityAndActionArray, row, col);
                 newMaxUtility = chosenUtilityAndAction.getUtility();
-                Action policyAction = this.optimalPolicyActionUtilArr[row][col].getAction();
-                currPolicyUtility = getExpectedUtility(this.optimalPolicyActionUtilArr, policyAction, row, col);
+                Action policyAction = this.optimalUtilityAndActionArray[row][col].getAction();
+                currPolicyUtility = getExpectedUtility(this.optimalUtilityAndActionArray, policyAction, row, col);
 
                 if (newMaxUtility > currPolicyUtility) {
-                    this.optimalPolicyActionUtilArr[row][col].setAction(chosenUtilityAndAction.getAction());
-                    ucvar = true;
+                    this.optimalUtilityAndActionArray[row][col].setAction(chosenUtilityAndAction.getAction());
+                    ucvar = false;
                 }
             }
         }
 
-        this.currentActionAndUtilityArr = copyArray(this.optimalPolicyActionUtilArr);
-        this.ListOfActionUtilityArrays.add(this.currentActionAndUtilityArr);
+        this.currentUtilityAndActionArray = copyArray(this.optimalUtilityAndActionArray);
+        this.allUtilityAndActionArray.add(this.currentUtilityAndActionArray);
 
         return ucvar;
     }
@@ -146,9 +146,9 @@ public class PolicyIteration {
         return utilityAndActionArray;
     }
 
-    private UtilityAndAction getSimplifiedBellmanUpdate(int row, int col, UtilityAndAction[][] currentActionAndUtilityArr, MazeState[][] Maze, double discount) {
-        Action action = currentActionAndUtilityArr[row][col].getAction();
-        double currUtility = getExpectedUtility(currentActionAndUtilityArr, action, row, col);
+    private UtilityAndAction getSimplifiedBellmanUpdate(int row, int col, UtilityAndAction[][] currentUtilityAndActionArray, MazeState[][] Maze, double discount) {
+        Action action = currentUtilityAndActionArray[row][col].getAction();
+        double currUtility = getExpectedUtility(currentUtilityAndActionArray, action, row, col);
 
         //retrieves the updated utility value
         double newUtility = Maze[row][col].getStateReward() + (discount * currUtility);
@@ -156,37 +156,38 @@ public class PolicyIteration {
     }
 
     //retrieves the expected utility of the action
-    private double getExpectedUtility(UtilityAndAction[][] actionUtilArr, Action action, int row, int col) {
-        //Calculate all the expected utility of all possible actions
-        double intendedUtility = getExpUtilityBasedAction(actionUtilArr, action, row, col);
-        double clockwiseUtility = getExpUtilityBasedAction(actionUtilArr, action.getClockwiseAction(), row, col);
-        double antiClockwiseUtility = getExpUtilityBasedAction(actionUtilArr, action.getAntiClockwiseAction(), row, col);
+    private double getExpectedUtility(UtilityAndAction[][] utilityAndActionArray, Action action, int row, int col) {
+        //Calculate the expected utility of a possible actions
+        double intendedUtility = getExpUtilityBasedAction(utilityAndActionArray, action, row, col);
+        double clockwiseUtility = getExpUtilityBasedAction(utilityAndActionArray, action.getClockwiseAction(), row, col);
+        double antiClockwiseUtility = getExpUtilityBasedAction(utilityAndActionArray, action.getAntiClockwiseAction(), row, col);
 
         return (INTENDED_PROB  * intendedUtility) + (CW_PROB  * clockwiseUtility) + (ACW_PROB  * antiClockwiseUtility);
 
     }
 
-    private double getExpUtilityBasedAction(UtilityAndAction[][] currentActionAndUtilityArr, Action action, int row, int col) {
+    private double getExpUtilityBasedAction(UtilityAndAction[][] currenUtilityAndActionArray, Action action, int row, int col) {
         int ymodified = row;
         int xmodified = col;
 
         if (action != null) {
+            //based on the action, it will retrieve the coordinate of the next state
             ymodified = row + action.getChangeY();
             xmodified = col + action.getChangeX();
         }
-
+        //based on the action, it will retrieve the coordinate of the next state
         if (ymodified >= 0 && xmodified >= 0 && ymodified < this.rows && xmodified < this.cols && this.Maze[ymodified][xmodified].isVisitable()) {
-            return currentActionAndUtilityArr[ymodified][xmodified].getUtility();
+            return currenUtilityAndActionArray[ymodified][xmodified].getUtility();
         }
-
-        return currentActionAndUtilityArr[row][col].getUtility();
+        //else get the utility of the current state
+        return currenUtilityAndActionArray[row][col].getUtility();
     }
 
-    private UtilityAndAction getMaxUtilityAndAction(UtilityAndAction[][] currentActionAndUtilityArr, int row, int col) {
+    private UtilityAndAction getMaxUtilityAndAction(UtilityAndAction[][] currentUtilityAndActionArray, int row, int col) {
         List<UtilityAndAction> listOfUtilityAndAction = new ArrayList<>();
 
         for (Action action : Action.values()) {
-            listOfUtilityAndAction.add(new UtilityAndAction(action, getExpectedUtility(currentActionAndUtilityArr, action, row, col)));
+            listOfUtilityAndAction.add(new UtilityAndAction(action, getExpectedUtility( currentUtilityAndActionArray, action, row, col)));
         }
 
         UtilityAndAction maxUtilityAndAction = Collections.max(listOfUtilityAndAction);

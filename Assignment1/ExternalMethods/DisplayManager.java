@@ -15,13 +15,20 @@ import static Assignment1.ExternalMethods.RepeatedFunctions.*;
 public class DisplayManager {
 
 
-    public static void displayActionsInGrid(final UtilityAndAction[][] UtilityAndAction) {
+    public static void showActionsInGrid(UtilityAndAction[][] UtilityAndAction) {
 
-        StringBuilder str = new StringBuilder();
+
         int rows = UtilityAndAction.length;
         int cols = UtilityAndAction[0].length;
+        StringBuilder str = new StringBuilder();
 
-        str.append(getHeader("Action Policy", true));
+
+        //Adds the header for the element that is being printed out
+        StringBuilder strHeader = new StringBuilder();
+        String msgHeader = toUpperCase("Action Policy in Grid Format", true);
+        strHeader.append("=========== " + msgHeader + " ===========\n");
+        str.append(strHeader);
+
         for (int row = 0; row < rows; row++) {
             if (row==0) {
                 for (int r = 0; r < rows + 1; r++) {
@@ -58,12 +65,16 @@ public class DisplayManager {
         System.out.println(str.toString());
     }
 
-    public static void displayUtilities(final MazeState[][] grid, final UtilityAndAction[][] UtilityAndAction) {
+    public static void showUtilities(final MazeState[][] grid, final UtilityAndAction[][] UtilityAndAction) {
         int rows = UtilityAndAction.length;
         int cols = UtilityAndAction[0].length;
 
-        printHeader("Reference utilities of states", true);
-        printDetails("Coordinates are in (col,row) format. Top-left corner is (0,0) <");
+        StringBuilder strHeader = new StringBuilder();
+        String msgHeader = toUpperCase("Reference utilities of states", true);
+        strHeader.append("=========== " + msgHeader + " ===========\n");
+        System.out.print(strHeader);
+
+        showDetails("Coordinates are in (col,row) format. Top-left corner is (0,0) <");
         for (int col = 0; col < cols; col++) {
             for (int row = 0; row < rows; row++) {
 
@@ -75,7 +86,7 @@ public class DisplayManager {
         }
     }
 
-    public static void displayUtilitiesInGrid(final UtilityAndAction[][] UtilityAndAction) {
+    public static void showUtilitiesInGrid(UtilityAndAction[][] UtilityAndAction) {
         int rows = UtilityAndAction.length;
         int cols = UtilityAndAction[0].length;
 
@@ -85,7 +96,12 @@ public class DisplayManager {
         StringBuilder str = new StringBuilder();
         double util;
 
-        str.append(getHeader("Utilities Grid", true));
+        //Adds the header for the element that is being printed out
+        StringBuilder strHeader = new StringBuilder();
+        String msgHeader = toUpperCase("Utilities in Grid Format", true);
+        strHeader.append("=========== " + msgHeader + " ===========\n");
+        str.append(strHeader);
+
         for (int row = 0; row < rows; row++) {
             if (row == 0) {
                 for (int r = 0; r < rows + 1; r++) {
@@ -139,20 +155,7 @@ public class DisplayManager {
         }
         return str.append("+");
     }
-
-    public static String getHeader(String msg, boolean toUpperCase) {
-        StringBuilder str = new StringBuilder();
-        msg = toUpperCase(msg, toUpperCase);
-        str.append("=========== " + msg + " ===========\n");
-        return str.toString();
-    }
-
-    public static void printHeader(String msg, boolean toUpperCase) {
-        msg = getHeader(msg, toUpperCase);
-        System.out.print(msg);
-    }
-
-    public static void printDetails(String msg) {
+    public static void showDetails(String msg) {
         StringBuilder str = new StringBuilder();
         str.append("> ");
         str.append(msg + "\n");

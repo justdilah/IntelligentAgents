@@ -100,7 +100,6 @@ public class Maze {
                 int row = Integer.valueOf(s.split(",")[0]);
                 int col = Integer.valueOf(s.split(",")[1]);
                 if (scale == 1) {
-                    System.out.println(s);
                     this.map[row][col].setStateReward(reward);
                     this.map[row][col].setStateType(state);
                     this.map[row][col].setVisitable(isVisitable);
@@ -188,7 +187,7 @@ public class Maze {
         return str.toString();
     }
 
-    public void displayMazeWorld() {
+    public void showMazeWorld() {
         System.out.println(this.toString(true));
     }
 

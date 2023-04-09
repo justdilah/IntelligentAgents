@@ -24,7 +24,7 @@ public class Main {
         //complicated = false - means that the maze environment created will be the maze that is defined in the assignment document
         //0 - means it will just use the original coordinates for each states (PENALTY,REWARD,WALL,EMPTY,START)
         Maze map = new Maze(NUM_ROWS,NUM_COLS, scale,complicated,0);
-        map.displayMazeWorld();
+        map.showMazeWorld();
 
         MazeState[][] mapObject = map.getMazeMap();
 
@@ -41,10 +41,10 @@ public class Main {
         System.out.println("No of Iterations: " + valueIteration.getNumOfIterations());
         System.out.println("Convergence Criteria: " + valueIteration.getConvergenceCriteria());
 
-        UtilityAndAction[][] OP_valueIteration = valueIteration.getMaxUtilityAndAction();
-        displayActionsInGrid(OP_valueIteration);
-        displayUtilities(mapObject, OP_valueIteration);
-        displayUtilitiesInGrid(OP_valueIteration);
+        UtilityAndAction[][] OP_valueIteration = valueIteration.getOptimalPolicy();
+        showActionsInGrid(OP_valueIteration);
+        showUtilities(mapObject, OP_valueIteration);
+        showUtilitiesInGrid(OP_valueIteration);
 
 
 
@@ -66,15 +66,15 @@ public class Main {
         //retrieves the list of utility and actions
         UtilityAndAction[][] OP_policyIteration = policyIteration.getOptimalPolicy();
 
-        //Displays actions in a grid format
-        displayActionsInGrid(OP_policyIteration);
-        displayUtilities(mapObject, OP_policyIteration);
-        //Displays utilities in a grid format
-        displayUtilitiesInGrid(OP_policyIteration);
+        //shows actions in a grid format
+        showActionsInGrid(OP_policyIteration);
+        showUtilities(mapObject, OP_policyIteration);
+        //shows utilities in a grid format
+        showUtilitiesInGrid(OP_policyIteration);
 
 
         // Output to csv file to plot utility estimates as a function of iteration
-        WriteToFile.writeToFile(policyIteration.getUtilityEstimates(), scale, "results/", "part1_modified_policy_iteration_utility_estimates");
+        WriteToFile.writeToFile(policyIteration.getUtilityEstimates(), scale, "results/", "part1_policy_iteration_utility_estimates");
 
     }
 }

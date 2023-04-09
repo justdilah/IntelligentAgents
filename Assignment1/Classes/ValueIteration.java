@@ -18,9 +18,10 @@ public class ValueIteration {
     private double convergenceCriteria = 0.0;
 
     private MazeState[][] Maze = null;
-    private UtilityAndAction[][] currentActionAndUtilityArr = null;
-    private UtilityAndAction[][] newUtilityAndActionArr = null;
-    private List<UtilityAndAction[][]> ListOfActionUtilityArrays = new ArrayList<>();
+    private UtilityAndAction[][] currentUtilityAndActionArray = null;
+    private UtilityAndAction[][] newUtilityAndActionArray = null;
+    //stores all the utility estimates which is used to plot the graph
+    private List<UtilityAndAction[][]> allUtilityAndActionArray = new ArrayList<>();
 
 
     public ValueIteration(Maze map, double epsilon, double discount) {
@@ -32,11 +33,11 @@ public class ValueIteration {
 
 
         //Initialisation
-        this.currentActionAndUtilityArr = new UtilityAndAction[rows][cols];
-        this.newUtilityAndActionArr = new UtilityAndAction[rows][cols];
-        newUtilityAndActionArr = this.initialiseArr();
+        this.currentUtilityAndActionArray = new UtilityAndAction[rows][cols];
+        this.newUtilityAndActionArray = new UtilityAndAction[rows][cols];
+        newUtilityAndActionArray = this.initialiseArr();
 
-
+        //keeps track of the difference between the new utility and the current utility
         double maxChangeInUtility = 0;
 
         this.convergenceCriteria = epsilon * ((1-discount) / discount);
@@ -50,10 +51,10 @@ public class ValueIteration {
         do {
             this.numOfIterations++;
 
-            this.currentActionAndUtilityArr = copyArray(newUtilityAndActionArr);
+            this.currentUtilityAndActionArray = copyArray(newUtilityAndActionArray);
 
             //acts as a starting point of the utility estimates (used for the plot)
-            this.ListOfActionUtilityArrays.add(this.currentActionAndUtilityArr);
+            this.allUtilityAndActionArray.add(this.currentUtilityAndActionArray);
             maxChangeInUtility = 0;
 
             // loop through all the states of the map
@@ -69,13 +70,13 @@ public class ValueIteration {
 
                     //retrieves the new utility of the current state by using the bellman equation
                     newUtility = performBellmanUpdate(row,col,currState,discount);
-                    currentUtility = this.currentActionAndUtilityArr[row][col].getUtility();
+                    currentUtility = this.currentUtilityAndActionArray[row][col].getUtility();
 
                     //sets new utility of the curr state
                     currState.setUtility(newUtility);
 
                     //updated utility and action of the state
-                    this.newUtilityAndActionArr[row][col] = currState;
+                    this.newUtilityAndActionArray[row][col] = currState;
 
                     //Checks if the difference between the new Utility and current utility larger than the previous difference
                     if (Math.abs(newUtility - currentUtility) > maxChangeInUtility) {
@@ -86,7 +87,7 @@ public class ValueIteration {
             }
 
         } while (maxChangeInUtility >= this.convergenceCriteria);
-        this.ListOfActionUtilityArrays.add(newUtilityAndActionArr);
+        this.allUtilityAndActionArray.add(newUtilityAndActionArray);
     }
 
 
@@ -94,12 +95,12 @@ public class ValueIteration {
         return this.Maze[row][col].getStateReward() + (discount * nextState.getUtility());
     }
 
-    public UtilityAndAction[][] getMaxUtilityAndAction() {
-        return this.ListOfActionUtilityArrays.get(this.getNumOfIterations());
+    public UtilityAndAction[][] getOptimalPolicy() {
+        return this.allUtilityAndActionArray.get(this.getNumOfIterations());
     }
 
     public List<UtilityAndAction[][]> getUtilityEstimates() {
-        return this.ListOfActionUtilityArrays;
+        return this.allUtilityAndActionArray;
     }
 
     //Copies Array
@@ -140,7 +141,7 @@ public class ValueIteration {
 
     //retrieves the expected utility of the action
     private double getPotentialNextStateUtility(Action action, int row, int col) {
-        //Calculate all the expected utility of all possible actions
+        //Calculate the expected utility of a possible actions
         double intendedUtility = getExpUtilityBasedAction(action, row, col);
         double clockwiseUtility = getExpUtilityBasedAction(action.getClockwiseAction(), row, col);
         double antiClockwiseUtility = getExpUtilityBasedAction(action.getAntiClockwiseAction(), row, col);
@@ -158,12 +159,12 @@ public class ValueIteration {
             xmodified = col + action.getChangeX();
         }
 
-        //get the utility of the new state if the action is taken
+        //based on the action, it will retrieve the coordinate of the next state
         if (ymodified >= 0 && xmodified >= 0 && ymodified < this.rows && xmodified < this.cols &&
                 this.Maze[ymodified][xmodified].isVisitable()) {
-            return this.currentActionAndUtilityArr[ymodified][xmodified].getUtility();
+            return this.currentUtilityAndActionArray[ymodified][xmodified].getUtility();
         }
         //else get the utility of the current state
-        return this.currentActionAndUtilityArr[row][col].getUtility();
+        return this.currentUtilityAndActionArray[row][col].getUtility();
     }
 }

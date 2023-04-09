@@ -8,7 +8,6 @@ import Assignment1.Maze.Maze;
 import Assignment1.Maze.MazeState;
 
 import static Assignment1.ExternalMethods.DisplayManager.*;
-import static Assignment1.ExternalMethods.DisplayManager.displayUtilitiesInGrid;
 import static Assignment1.Main.Config.*;
 
 /**
@@ -23,7 +22,7 @@ public class ComplicatedMazeEnv2ndCase {
         //complicated = true - means that the maze environment created will be designed for Bonus Question
         //2 - means it will use the coordinates defined for maze environment (2nd case) for each states (PENALTY,REWARD,WALL,EMPTY,START)
         Maze map = new Maze(NUM_ROWS,NUM_COLS, scale,complicated,2);
-        map.displayMazeWorld();
+        map.showMazeWorld();
 
         MazeState[][] mapObject = map.getMazeMap();
 
@@ -37,17 +36,18 @@ public class ComplicatedMazeEnv2ndCase {
         System.out.println("Maximum Reward Value : " + MAX_REWARD);
         System.out.println("Constant(c): " + C);
         System.out.println("Epsilon(c*Rmax): " + EPSILON);
-
-        UtilityAndAction[][] OP_valueIteration = valueIteration.getMaxUtilityAndAction();
-        displayActionsInGrid(OP_valueIteration);
-        displayUtilities(mapObject, OP_valueIteration);
-        displayUtilitiesInGrid(OP_valueIteration);
-
         System.out.println("No of Iterations: " + valueIteration.getNumOfIterations());
         System.out.println("Convergence Criteria: " + valueIteration.getConvergenceCriteria());
 
+        UtilityAndAction[][] OP_valueIteration = valueIteration.getOptimalPolicy();
+        showActionsInGrid(OP_valueIteration);
+        showUtilities(mapObject, OP_valueIteration);
+        showUtilitiesInGrid(OP_valueIteration);
+
+
+
         // Output to csv file to plot utility estimates as a function of iteration
-        WriteToFile.writeToFile(valueIteration.getUtilityEstimates(), scale,"results/", "part2_value_iteration_utility_estimates");
+        WriteToFile.writeToFile(valueIteration.getUtilityEstimates(), scale,"results/", "part2_2ndCase_value_iteration_utility_estimates");
 
         //POLICY ITERATION
         PolicyIteration policyIteration = new PolicyIteration(map, DISCOUNT, K);
@@ -59,16 +59,17 @@ public class ComplicatedMazeEnv2ndCase {
         System.out.println("Maximum Reward Value: " + MAX_REWARD);
         System.out.println("Constant(c): " + C);
         System.out.println("No of times Simplified bellman update is executed: " + K);
+        System.out.println("No of Iterations: " + policyIteration.getNoOfIterations());
 
         UtilityAndAction[][] OP_policyIteration = policyIteration.getOptimalPolicy();
 
-        displayActionsInGrid(OP_policyIteration);
-        displayUtilities(mapObject, OP_policyIteration);
-        displayUtilitiesInGrid(OP_policyIteration);
-        System.out.println("No of Iterations: " + policyIteration.getNoOfIterations());
+        showActionsInGrid(OP_policyIteration);
+        showUtilities(mapObject, OP_policyIteration);
+        showUtilitiesInGrid(OP_policyIteration);
+
 
         // Output to csv file to plot utility estimates as a function of iteration
-        WriteToFile.writeToFile(policyIteration.getUtilityEstimates(), scale, "results/", "part2_modified_policy_iteration_utility_estimates");
+        WriteToFile.writeToFile(policyIteration.getUtilityEstimates(), scale, "results/", "part2_2ndCase_policy_iteration_utility_estimates");
 
     }
 }
